@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { Upload, X, FileUp, CheckCircle } from 'lucide-react'
 import { InteractiveHoverButton } from './ui/interactive-hover-button'
 import { DottedGlowCard } from './ui/dotted-glow-card'
@@ -12,6 +13,7 @@ export default function CreateProjectForm({
   onProjectCreated,
   onCancel,
 }: CreateProjectFormProps) {
+  const navigate = useNavigate()
   const [projectName, setProjectName] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
@@ -39,7 +41,6 @@ export default function CreateProjectForm({
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
-
     if (e.dataTransfer.files) {
       setFiles(Array.from(e.dataTransfer.files))
       setError('')
@@ -66,7 +67,6 @@ export default function CreateProjectForm({
       setError('Project name is required')
       return
     }
-
     if (files.length === 0) {
       setError('Please select at least one log file')
       return
@@ -75,29 +75,30 @@ export default function CreateProjectForm({
     try {
       setLoading(true)
 
-      // Create FormData for file upload
       const formData = new FormData()
       formData.append('name', projectName)
-      files.forEach((file) => {
-        formData.append('files', file)
+      files.forEach((file) => formData.append('files', file))
+
+      const token = localStorage.getItem('access_token')
+      const res = await fetch('/api/project', {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
       })
 
-      // TODO: Integrate POST /api/project backend call here
-      // const response = await fetch('/api/project', {
-      //   method: 'POST',
-      //   body: formData,
-      // })
-      // const data = await response.json()
-      // if (data.projectId) {
-      //   navigate({ to: `/project/${data.projectId}` })
-      // }
+      const data = await res.json()
 
-      // Reset form
-      setProjectName('')
-      setFiles([])
+      if (!res.ok) {
+        setError(data?.error ?? data?.message ?? 'Failed to create project.')
+        return
+      }
 
-      // Notify parent so it can refresh projects list when backend is wired
-      onProjectCreated()
+      // Backend returns { project_id, embedding_started }
+      if (data.project_id) {
+        navigate({ to: `/project/${data.project_id}` })
+      } else {
+        onProjectCreated()
+      }
     } catch (err) {
       setError('Failed to create project. Please try again.')
       console.error(err)
@@ -153,11 +154,10 @@ export default function CreateProjectForm({
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-              dragActive
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${dragActive
                 ? 'border-slate-200 bg-slate-900'
                 : 'border-slate-700 bg-slate-900/80 hover:border-slate-500'
-            }`}
+              }`}
           >
             <input
               type="file"
@@ -172,7 +172,9 @@ export default function CreateProjectForm({
               <div className="bg-slate-700 rounded-full p-4 mb-4">
                 <Upload className="w-8 h-8 text-slate-100" />
               </div>
-              <span className="text-white font-semibold text-lg">Click to upload or drag and drop</span>
+              <span className="text-white font-semibold text-lg">
+                Click to upload or drag and drop
+              </span>
               <span className="text-gray-400 text-sm mt-2">
                 Supported formats: JSON, TXT, LOG (Multiple files supported)
               </span>
@@ -221,7 +223,7 @@ export default function CreateProjectForm({
           <InteractiveHoverButton
             type="submit"
             disabled={loading}
-            text={loading ? 'Creating...' : 'Create Project'}
+            text={loading ? 'Creating…' : 'Create Project'}
             className="flex-1 w-auto"
           />
           <InteractiveHoverButton
@@ -237,4 +239,3 @@ export default function CreateProjectForm({
     </DottedGlowCard>
   )
 }
-

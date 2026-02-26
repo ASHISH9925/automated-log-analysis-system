@@ -15,6 +15,17 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
+  server: {
+    proxy: {
+      // Forward all /api/* calls to the Flask backend during development.
+      // Avoids CORS entirely — browser sees requests as same-origin.
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })
 
 export default config

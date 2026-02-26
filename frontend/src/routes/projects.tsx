@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Plus, BarChart3 } from 'lucide-react'
+import { BarChart3 } from 'lucide-react'
 import { InteractiveHoverButton } from '../components/ui/interactive-hover-button'
 import ProjectList from '../components/ProjectList'
 import CreateProjectForm from '../components/CreateProjectForm'
@@ -14,10 +14,17 @@ interface Project {
   logFileCount: number
 }
 
+function getAuthHeaders(): HeadersInit {
+  const token = localStorage.getItem('access_token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
 function ProjectsPage() {
+  const navigate = useNavigate()
   const [projects, setProjects] = useState<Project[]>([])
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchProjects()
@@ -26,14 +33,30 @@ function ProjectsPage() {
   const fetchProjects = async () => {
     try {
       setLoading(true)
-      // TODO: Integrate GET /api/project backend call here
-      // const response = await fetch('/api/project')
-      // const data = await response.json()
-      // setProjects(data)
-      setProjects([])
-      setLoading(false)
-    } catch (error) {
-      console.error('Failed to fetch projects:', error)
+      setError(null)
+      const res = await fetch('/api/project', { headers: getAuthHeaders() })
+      if (res.status === 401) {
+        // Token missing or expired — redirect to login
+        navigate({ to: '/login' })
+        return
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
+      // Backend returns { projects: [{ project_id, name, created_at }] }
+      // Map to the shape expected by ProjectList
+      const mapped: Project[] = (data.projects ?? []).map(
+        (p: { project_id: string; name: string; created_at: string }) => ({
+          id: p.project_id,
+          name: p.name,
+          createdDate: p.created_at,
+          logFileCount: 0, // not returned by backend, default 0
+        })
+      )
+      setProjects(mapped)
+    } catch (err) {
+      console.error('Failed to fetch projects:', err)
+      setError('Failed to load projects. Please try again.')
+    } finally {
       setLoading(false)
     }
   }
@@ -74,6 +97,13 @@ function ProjectsPage() {
               onProjectCreated={handleProjectCreated}
               onCancel={() => setShowCreateForm(false)}
             />
+          </div>
+        )}
+
+        {/* Error banner */}
+        {error && (
+          <div className="mb-6 bg-red-500/20 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+            {error}
           </div>
         )}
 
