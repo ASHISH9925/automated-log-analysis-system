@@ -1,6 +1,6 @@
 import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Search, FileText, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, Search, FileText, ChevronDown, ChevronRight, Download } from "lucide-react";
 
 export const Route = createFileRoute("/project-logs/$projectId")({
     component: ProjectLogsPage,
@@ -106,6 +106,30 @@ function ProjectLogsPage() {
         });
     };
 
+    const handleExportCSV = () => {
+        const headers = ["Filename", "Timestamp", "Level", "Message"];
+        const rows: string[] = [];
+        rows.push(headers.join(","));
+
+        filteredFiles.forEach((file) => {
+            file.logs.forEach((log) => {
+                const ts = getLogTimestamp(log) || "";
+                const level = log.level || "";
+                const msg = String(log.message ?? JSON.stringify(log)).replace(/"/g, '""');
+                rows.push(`"${file.filename}","${ts}","${level}","${msg}"`);
+            });
+        });
+
+        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + rows.join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `project_logs_${projectId}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div
             className="min-h-screen text-gray-200 p-8"
@@ -141,9 +165,17 @@ function ProjectLogsPage() {
                         <p className="text-slate-400 text-sm font-mono ml-9">Project: {projectId}</p>
                     </div>
                     {!loading && (
-                        <div className="flex gap-4 text-sm text-slate-400">
+                        <div className="flex items-center gap-4 text-sm text-slate-400">
                             <span><span className="text-white font-semibold">{files.length}</span> files</span>
                             <span><span className="text-white font-semibold">{totalFiltered}</span> entries shown</span>
+                            <button
+                                onClick={handleExportCSV}
+                                disabled={totalFiltered === 0}
+                                className="ml-2 flex items-center gap-2 px-3 py-1.5 border border-white/20 hover:bg-white/10 text-white rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <Download className="w-4 h-4" />
+                                Export CSV
+                            </button>
                         </div>
                     )}
                 </div>

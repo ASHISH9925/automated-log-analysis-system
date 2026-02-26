@@ -24,10 +24,19 @@ We developed this platform as a complete multi-tenant Software-as-a-Service, foc
 - **Markdown Rendering**: `react-markdown` to natively render complex, structured responses from the AI Assistant.
 
 ### Backend (Server-side)
-- **Framework**: Python / Flask, utilizing modern `uv` dependency management and virtual environments.
+- **Framework**: Python / Flask, utilizing modern `uv` dependency management.
 - **Database**: MongoDB (via `pymongo`) handling document storage, upserts, and advanced compound indexes (user + project + filename) to maintain tight data integrity. 
-- **AI Integrations**: `huggingface_hub.InferenceClient` for fast text-generation and embeddings integration.
-- **Security**: Granular `@require_auth` decorators and JWT payload validations securing every API route.
+- **Security**: Granular `@require_auth` decorators and JWT payload validations securing API routes.
+
+#### Backend Directory Structure
+The architecture is modularly separated by concern:
+- **`app/routes/`**: Flask Blueprint endpoints containing the entry points for the API (e.g. `/api/auth`, `/api/project`). 
+- **`app/services/`**: Core business logic. 
+  - The **`project_service.py`** dictates the flow of project creation, and calls parsers to process files.
+  - The **`alert_engine.py`** continuously evaluates sliding time-windows across parsed logs to emit rule-based anomalies.
+- **`app/parsers/`**: Handles raw text tokenization. `log_parser.py` uses Regex logic to break raw lines into structured metadata (Timestamp, Level, Service).
+- **`app/models/`**: Provides the data layer wrapper. Abstracts MongoDB queries (insert, upsert, count) into robust repository classes over specific collections.
+- **`app/rag/`**: Contains the Retrieval-Augmented Generation context logic. Prepares prompts injected with recent logs/alerts to query HuggingFace APIs for the AI assistant.
 
 ## ✨ Key Features
 
@@ -56,8 +65,6 @@ We developed this platform as a complete multi-tenant Software-as-a-Service, foc
    MONGODB_DB=your_db_name
    JWT_SECRET=your_jwt_secret
    HF_TOKEN=your_huggingface_token
-   HF_EMBEDDING_MODEL=your_embedding_model  # e.g., sentence-transformers/all-MiniLM-L6-v2
-   HF_CHAT_MODEL=your_chat_model            # e.g., meta-llama/Llama-3-8b-chat
    ```
 3. Run the development server using `uv`:
    ```bash
