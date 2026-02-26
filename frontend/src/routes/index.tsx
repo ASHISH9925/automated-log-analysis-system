@@ -1,118 +1,107 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import {
+  FileText,
+  AlertCircle,
+  Search,
+  MessageSquare,
+  BarChart3,
   Zap,
-  Server,
-  Route as RouteIcon,
-  Shield,
-  Waves,
-  Sparkles,
 } from 'lucide-react'
+import { InteractiveHoverButton } from '../components/ui/interactive-hover-button'
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({ component: LandingPage })
 
-function App() {
+function LandingPage() {
+  const navigate = useNavigate()
+
   const features = [
     {
-      icon: <Zap className="w-12 h-12 text-cyan-400" />,
-      title: 'Powerful Server Functions',
+      icon: <FileText className="w-10 h-10 text-slate-100" />,
+      title: 'Log Ingestion',
       description:
-        'Write server-side code that seamlessly integrates with your client components. Type-safe, secure, and simple.',
+        'Upload and automatically parse logs from multiple services. Support for JSON and text formats.',
     },
     {
-      icon: <Server className="w-12 h-12 text-cyan-400" />,
-      title: 'Flexible Server Side Rendering',
+      icon: <Search className="w-10 h-10 text-slate-100" />,
+      title: 'Powerful Search',
       description:
-        'Full-document SSR, streaming, and progressive enhancement out of the box. Control exactly what renders where.',
+        'Filter logs by level, service, time range, and keywords. Find what you need instantly.',
     },
     {
-      icon: <RouteIcon className="w-12 h-12 text-cyan-400" />,
-      title: 'API Routes',
+      icon: <AlertCircle className="w-10 h-10 text-slate-100" />,
+      title: 'Smart Alerts',
       description:
-        'Build type-safe API endpoints alongside your application. No separate backend needed.',
+        'Set rule-based alerts. Detect error spikes, patterns, and anomalies automatically.',
     },
     {
-      icon: <Shield className="w-12 h-12 text-cyan-400" />,
-      title: 'Strongly Typed Everything',
+      icon: <BarChart3 className="w-10 h-10 text-slate-100" />,
+      title: 'Real-Time Insights',
       description:
-        'End-to-end type safety from server to client. Catch errors before they reach production.',
+        'View summaries, error trends, and statistics at a glance. Track system health.',
     },
     {
-      icon: <Waves className="w-12 h-12 text-cyan-400" />,
-      title: 'Full Streaming Support',
+      icon: <MessageSquare className="w-10 h-10 text-slate-100" />,
+      title: 'AI Chat Analysis',
       description:
-        'Stream data from server to client progressively. Perfect for AI applications and real-time updates.',
+        'Ask questions about your logs. Get intelligent insights via conversational AI.',
     },
     {
-      icon: <Sparkles className="w-12 h-12 text-cyan-400" />,
-      title: 'Next Generation Ready',
+      icon: <Zap className="w-10 h-10 text-slate-100" />,
+      title: 'Fast & Reliable',
       description:
-        'Built from the ground up for modern web applications. Deploy anywhere JavaScript runs.',
+        'Built for performance. Process large volumes of logs with minimal latency.',
     },
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      <section className="relative py-20 px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative py-32 px-6 text-center overflow-hidden">
         <div className="relative max-w-5xl mx-auto">
-          <div className="flex items-center justify-center gap-6 mb-6">
-            <img
-              src="/tanstack-circle-logo.png"
-              alt="TanStack Logo"
-              className="w-24 h-24 md:w-32 md:h-32"
-            />
-            <h1 className="text-6xl md:text-7xl font-black text-white [letter-spacing:-0.08em]">
-              <span className="text-gray-300">TANSTACK</span>{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                START
-              </span>
-            </h1>
-          </div>
-          <p className="text-2xl md:text-3xl text-gray-300 mb-4 font-light">
-            The framework for next generation AI applications
+          <h1 className="text-6xl md:text-7xl font-black text-white mb-6 leading-tight">
+            <span className="text-white">Monitor Logs</span>
+            {' '}Like Never Before
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-4 font-light max-w-3xl mx-auto">
+            Intelligent log analysis, real-time alerts, and AI-powered insights for modern systems
           </p>
-          <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-8">
-            Full-stack framework powered by TanStack Router for React and Solid.
-            Build modern applications with server functions, streaming, and type
-            safety.
+          <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-12">
+            Upload your logs, set up smart alert rules, search across all your data, and get instant insights with AI chat analysis.
           </p>
-          <div className="flex flex-col items-center gap-4">
-            <a
-              href="https://tanstack.com/start"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-cyan-500/50"
-            >
-              Documentation
-            </a>
-            <p className="text-gray-400 text-sm mt-2">
-              Begin your TanStack Start journey by editing{' '}
-              <code className="px-2 py-1 bg-slate-700 rounded text-cyan-400">
-                /src/routes/index.tsx
-              </code>
-            </p>
-          </div>
+          <InteractiveHoverButton
+            text="Get Started"
+            onClick={() => navigate({ to: '/login' })}
+            className="w-40 mx-auto"
+          />
         </div>
       </section>
 
-      <section className="py-16 px-6 max-w-7xl mx-auto">
+      {/* Features Section */}
+      <section className="py-20 px-6 max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-white mb-4">Powerful Features</h2>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Everything you need to understand, monitor, and act on your log data.
+          </p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
+              className="group bg-slate-900/70 backdrop-blur-sm border border-slate-800 rounded-xl p-8 hover:border-slate-300 transition-all duration-300 hover:shadow-lg hover:shadow-black/40 hover:bg-slate-900"
             >
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
+              <div className="mb-5 inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-800 group-hover:bg-slate-700 transition-colors duration-300">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-slate-100 transition-colors duration-300">
                 {feature.title}
               </h3>
-              <p className="text-gray-400 leading-relaxed">
-                {feature.description}
-              </p>
+              <p className="text-gray-400 leading-relaxed">{feature.description}</p>
             </div>
           ))}
         </div>
       </section>
+
     </div>
   )
 }

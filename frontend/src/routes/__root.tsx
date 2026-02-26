@@ -1,9 +1,6 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
-
 import Header from '../components/Header'
-
+import { DottedGlowBackground } from '@/components/ui/dotted-glow-background'
 import appCss from '../styles.css?url'
 
 export const Route = createRootRoute({
@@ -17,7 +14,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Log Monitoring System',
       },
     ],
     links: [
@@ -36,20 +33,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
-        <Header />
-        {children}
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
+      <body className="bg-slate-950">
+        <div className="relative min-h-screen overflow-hidden">
+          <DottedGlowBackground
+            className="mask-radial-to-90% mask-radial-at-center"
+            opacity={1}
+            gap={14}
+            radius={1.4}
+          />
+          <div className="relative z-10">
+            <Header />
+            {children}
+          </div>
+        </div>
         <Scripts />
       </body>
     </html>
