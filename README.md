@@ -2,6 +2,20 @@
 
 An advanced, AI-driven SaaS platform designed to ingest, parse, and monitor application logs at scale. The system provides real-time alerting, dynamic visualizations, and a state-of-the-art **RAG (Retrieval-Augmented Generation) AI assistant** to interactively diagnose anomalies in your logs.
 
+## 📸 Screenshots
+
+| Landing Page | Dashboard |
+| --- | --- |
+| ![Landing Page](frontend/project_screenshots/landing_page.png) | ![Dashboard](frontend/project_screenshots/dashboard.png) |
+
+| Projects View | Log Explorer |
+| --- | --- |
+| ![Projects View](frontend/project_screenshots/view%20projects.png) | ![Log Explorer](frontend/project_screenshots/logs.png) |
+
+| CSV Export |
+| --- |
+| ![CSV Export](frontend/project_screenshots/csv.png) |
+
 ## 🚀 The SaaS Architecture
 
 We developed this platform as a complete multi-tenant Software-as-a-Service, focusing on security, performance, and user experience.
