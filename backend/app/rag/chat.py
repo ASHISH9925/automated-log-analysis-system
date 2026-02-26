@@ -73,7 +73,8 @@ def chat_with_project(project_id: str, user_id: str, messages: list[dict[str, An
     system_instruction = (
         "You are an AI assistant helping a user analyze their application anomalies. "
         "Use the provided context containing relevant parsed system ALERTS to answer the user's question. "
-        "Provide your answer in Markdown format. Be concise and precise."
+        "If the user is just greeting you or engaging in casual conversation, reply normally and politely. "
+        "Always provide your answer in Markdown format. Be concise and precise."
     )
 
     prompt_parts: list[str] = []

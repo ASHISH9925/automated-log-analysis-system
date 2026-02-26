@@ -45,11 +45,11 @@ function ProjectsPage() {
       // Backend returns { projects: [{ project_id, name, created_at }] }
       // Map to the shape expected by ProjectList
       const mapped: Project[] = (data.projects ?? []).map(
-        (p: { project_id: string; name: string; created_at: string }) => ({
+        (p: { project_id: string; name: string; created_at: string; log_file_count: number }) => ({
           id: p.project_id,
           name: p.name,
           createdDate: p.created_at,
-          logFileCount: 0, // not returned by backend, default 0
+          logFileCount: p.log_file_count ?? 0,
         })
       )
       setProjects(mapped)

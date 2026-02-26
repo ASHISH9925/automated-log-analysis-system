@@ -33,16 +33,21 @@ class ProjectListItem:
     project_id: str
     name: str
     created_at: str
+    log_file_count: int = 0
 
 
 def list_projects(user_id: str) -> list[ProjectListItem]:
     repo = ProjectRepository()
+    log_repo = ProjectLogRepository()
     projects = repo.list_for_user(user_id)
     return [
         ProjectListItem(
             project_id=p.id,
             name=p.name,
             created_at=p.created_at.isoformat(),
+            log_file_count=log_repo.count_files_for_project(
+                user_id=user_id, project_id=p.id
+            ),
         )
         for p in projects
     ]

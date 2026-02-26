@@ -9,13 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as LogsRouteImport } from './routes/logs'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectProjectIdRouteImport } from './routes/project.$projectId'
+import { Route as ProjectLogsProjectIdRouteImport } from './routes/project-logs.$projectId'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -46,6 +53,11 @@ const ProjectProjectIdRoute = ProjectProjectIdRouteImport.update({
   path: '/project/$projectId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectLogsProjectIdRoute = ProjectLogsProjectIdRouteImport.update({
+  id: '/project-logs/$projectId',
+  path: '/project-logs/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -53,6 +65,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
   '/projects': typeof ProjectsRoute
+  '/register': typeof RegisterRoute
+  '/project-logs/$projectId': typeof ProjectLogsProjectIdRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +75,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
   '/projects': typeof ProjectsRoute
+  '/register': typeof RegisterRoute
+  '/project-logs/$projectId': typeof ProjectLogsProjectIdRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
 }
 export interface FileRoutesById {
@@ -70,6 +86,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
   '/projects': typeof ProjectsRoute
+  '/register': typeof RegisterRoute
+  '/project-logs/$projectId': typeof ProjectLogsProjectIdRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
 }
 export interface FileRouteTypes {
@@ -80,9 +98,19 @@ export interface FileRouteTypes {
     | '/login'
     | '/logs'
     | '/projects'
+    | '/register'
+    | '/project-logs/$projectId'
     | '/project/$projectId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/alerts' | '/login' | '/logs' | '/projects' | '/project/$projectId'
+  to:
+    | '/'
+    | '/alerts'
+    | '/login'
+    | '/logs'
+    | '/projects'
+    | '/register'
+    | '/project-logs/$projectId'
+    | '/project/$projectId'
   id:
     | '__root__'
     | '/'
@@ -90,6 +118,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/logs'
     | '/projects'
+    | '/register'
+    | '/project-logs/$projectId'
     | '/project/$projectId'
   fileRoutesById: FileRoutesById
 }
@@ -99,11 +129,20 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   LogsRoute: typeof LogsRoute
   ProjectsRoute: typeof ProjectsRoute
+  RegisterRoute: typeof RegisterRoute
+  ProjectLogsProjectIdRoute: typeof ProjectLogsProjectIdRoute
   ProjectProjectIdRoute: typeof ProjectProjectIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects': {
       id: '/projects'
       path: '/projects'
@@ -146,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectProjectIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/project-logs/$projectId': {
+      id: '/project-logs/$projectId'
+      path: '/project-logs/$projectId'
+      fullPath: '/project-logs/$projectId'
+      preLoaderRoute: typeof ProjectLogsProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -155,6 +201,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   LogsRoute: LogsRoute,
   ProjectsRoute: ProjectsRoute,
+  RegisterRoute: RegisterRoute,
+  ProjectLogsProjectIdRoute: ProjectLogsProjectIdRoute,
   ProjectProjectIdRoute: ProjectProjectIdRoute,
 }
 export const routeTree = rootRouteImport

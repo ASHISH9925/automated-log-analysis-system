@@ -70,6 +70,11 @@ class ProjectLogRepository:
     def _ensure_indexes(self) -> None:
         self._collection.create_index([("user_id", 1), ("project_id", 1)])
         self._collection.create_index([("project_id", 1), ("created_at", -1)])
+        # Unique per file per project — re-uploading same filename replaces existing
+        self._collection.create_index(
+            [("user_id", 1), ("project_id", 1), ("filename", 1)],
+            unique=True,
+        )
 
     def add_file_logs(
         self,
@@ -80,19 +85,29 @@ class ProjectLogRepository:
         entries: list[dict[str, Any]],
     ) -> ProjectLogFile:
         now = datetime.now(timezone.utc)
-        result = self._collection.insert_one(
+        # Upsert: replace existing doc for same user+project+filename, or insert new
+        self._collection.replace_one(
+            {"user_id": user_id, "project_id": project_id, "filename": filename},
             {
                 "user_id": user_id,
                 "project_id": project_id,
                 "filename": filename,
                 "created_at": now,
                 "entries": entries,
-            }
+            },
+            upsert=True,
         )
-        doc = self._collection.find_one({"_id": result.inserted_id})
+        doc = self._collection.find_one(
+            {"user_id": user_id, "project_id": project_id, "filename": filename}
+        )
         if doc is None:
             raise ProjectLogCreationError
         return self._to_project_log(doc)
+
+    def count_files_for_project(self, *, user_id: str, project_id: str) -> int:
+        return self._collection.count_documents(
+            {"user_id": user_id, "project_id": project_id}
+        )
 
     def list_files_for_project(
         self, *, user_id: str, project_id: str
